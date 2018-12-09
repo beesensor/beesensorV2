@@ -1,5 +1,5 @@
 <?php
-Abstract Class LogSession {
+Class LogSession {
 
     public function __construct() {
         if (!$this->isSessionStarted()) {
@@ -7,7 +7,7 @@ Abstract Class LogSession {
         }
     }
 
-    /*
+    
     public function loginCheck($password) {
 
         if (!LogSession::isSessionStarted()) {
@@ -46,7 +46,7 @@ Abstract Class LogSession {
             return $this->user;
         }
     }
-    */
+    
     public function setValue($key, $value) {
         $_SESSION[$key] = $value;
     }
@@ -59,7 +59,7 @@ Abstract Class LogSession {
         }
     }
 
-    /*
+    
     public static function setLogin($user, $password, $values=null) {
         if (!LogSession::isSessionStarted()) {
             LogSession::sec_session_start();
@@ -75,7 +75,6 @@ Abstract Class LogSession {
             }
         }
     }
-    */
 
     public static function sec_session_start() {
         $session_name = 'sec_session_id';
