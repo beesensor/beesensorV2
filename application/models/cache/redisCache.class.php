@@ -43,10 +43,10 @@ Class RedisCache {
             }
 
             if (is_array($item)) {
-                $item = (Object) $item;
+                $obj = $this->toObject($item);
             }
 
-            return $this->mapper->map($item, $object);
+            return $this->mapper->map($obj, $object);
             
         } else {
             return null;

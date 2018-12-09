@@ -86,7 +86,7 @@ Class Explotacio extends Model {
         $explotacio = $cache->getItemDeserialized($codi, new Explotacio());
         if ($explotacio==null) {
             $sql = "select exp_cod, cli_cif, exp_des, exp_info, exp_lat, exp_long, exp_lz, exp_inicio, exp_predict, exp_predictcodi, 
-                    exp_ommail, exp_omtoken, fec_alt, fec_mod, fec_baj from bee_expl where exp_codi=:codi";
+                    exp_ommail, exp_omtoken, fec_alt, fec_mod, fec_baj from bee_expl where exp_cod=:codi";
             $arrValues = array("codi"=>$codi);
             $STH = $db->getInstance()->prepare($sql);
             $STH->execute($arrValues);

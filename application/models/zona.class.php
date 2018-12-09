@@ -20,7 +20,7 @@ Class Zona extends Model {
      */
     const cacheKey = "ZONES";
 
-    public function __construct($codi=null, $explotatio=null, $descripcio="", $fecAlt = null, $fecMod = null, $fecBaj = null) {
+    public function __construct($codi=null, $explotacio=null, $descripcio="", $fecAlt = null, $fecMod = null, $fecBaj = null) {
         parent::__construct($fecAlt, $fecMod, $fecBaj);
         $this->codi = $codi;
         $this->explotacio = $explotacio;
