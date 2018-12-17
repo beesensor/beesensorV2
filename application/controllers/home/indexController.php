@@ -1,15 +1,11 @@
 <?php
-Class IndexController extends BaseController {
+Class IndexController extends HomeController {
 
     public function index() {
-    
-       $clients = Client::all($this->db, $this->redisConfig);
-       print_r($clients);
-    
-       $explotacions = Explotacio::all($this->db, $this->redisConfig);
-       print_r($explotacions);
-      
-       $zones = Zona::all($this->db, $this->redisConfig);
-       print_r($zones);
+        $clients = Client::all($this->db, $this->redisConfig);
+        $this->header->addJS("/js/sha512.js");
+        $this->loadView("index");
     }
+
+    protected function setBreadCrumb() {}
 }

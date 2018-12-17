@@ -11,7 +11,6 @@ abstract class BaseController {
     public $parameters = array();
 
     function __construct($registry) {
-        ini_set('memory_limit','1024M');
         $this->path = $registry->path;
         $this->db = $registry->db;
         $this->dbi = $this->db->getInstance();

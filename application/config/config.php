@@ -24,10 +24,14 @@ $redisConfig = array(
 
 $devConfig = array(
     "development"=>true,
-    "devdir"=>"voltor"
+    "devdir"=>"beesensorV2"
 );
 
 $appConfig = array(
-
+    "nomApp"=>"Beesensor intranet",
+    "menuNomApp"=>"Bee<b>sensor</b>",
+    "menuNomAppS"=>"B<b>s</b>",
+    "appDesc"=>"Intranet de Beesensor",
+    "author"=>"Miquel &Agrave;ngel Mayol"
 );
 ?>

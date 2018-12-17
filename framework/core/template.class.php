@@ -46,8 +46,8 @@ class Template {
     public function show($name) {
 
         $debug = false;
-        if (isset($this->registry->debug)) {
-            $debug = $this->registry->debug;
+        if (isset($this->registry->devConfig) && array_key_exists($this->registry->devConfig['debug'])) {
+            $debug = boolval($this->registry->devConfig['debug']);
         }
 
         $config = array(

@@ -21,25 +21,48 @@ Class Voltor {
             $voltor->autoload();
             $voltor->dispatch();
         } catch (Exception $ex) {
-            $config = array(
-                "tpl_dir"       => CORE_PATH."errortpl/",
-                "cache_dir"     => CORE_PATH."errortpl/cache/",
-                "debug"         => false,
-                "tpl_ext"       => 'html',
-                'path_replace'  => false
-            );
-
-            Tpl::configure( $config );
-
-            $tpl = new Tpl;
-            $tpl->assign("title", $ex->getMessage());
-            $tpl->assign("exception", print_r($ex, 1));
-            $tpl->draw("error");
+            Voltor::showError($ex->getMessage(), print_r($ex, true));
         }
+    }
+
+    protected static function showError($message, $error) {
+        $config = array(
+            "tpl_dir"       => CORE_PATH."errortpl/",
+            "cache_dir"     => CORE_PATH."errortpl/cache/",
+            "debug"         => false,
+            "tpl_ext"       => 'html',
+            'path_replace'  => false
+        );
+
+        Tpl::configure( $config );
+
+        $tpl = new Tpl;
+        $tpl->assign("title", $message);
+        $tpl->assign("exception", $error);
+        $tpl->draw("error");
     }
 
     private function init()
     {
+        error_reporting(0);
+        ini_set('display_errors', 0);
+
+        register_shutdown_function(function() {
+            $error = error_get_last();
+
+            if (!is_null($error)) {
+                $m = explode("Stack trace:", $error["message"]);
+
+                if ($m) {
+                    $message = $m[0];
+                } else {
+                    $message = $error["message"];
+                }
+    
+                Voltor::showError($message, print_r($error, true));
+            }
+        });
+
         //definim constants
         define("DS", DIRECTORY_SEPARATOR);
 
@@ -51,7 +74,6 @@ Class Voltor {
 
         define("PUBLIC_PATH", ROOT . "public" . DS);
 
-
         define("CONFIG_PATH", APP_PATH . "config" . DS);
 
         define("CONTROLLER_PATH", APP_PATH . "controllers" . DS);
@@ -61,7 +83,6 @@ Class Voltor {
         define("VIEW_PATH", APP_PATH . "views" . DS);
 
         define("HELPER_PATH", FRAMEWORK_PATH . "helpers" . DS);
-
 
         define("CORE_PATH", FRAMEWORK_PATH . "core" . DS);
 
@@ -93,7 +114,7 @@ Class Voltor {
         $this->registry->path = $path;
         $this->registry->db = $db;
         $this->registry->redisConfig=$redisConfig;
-        $this->registry->debug = $path->debug;
+        $this->registry->devConfig=$devConfig;
 
         $router = new Router($this->registry, CONTROLLER_PATH, $this->arrControllerPaths, $appConfig);
         $router->loader();

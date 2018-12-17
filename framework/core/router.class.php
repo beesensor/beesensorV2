@@ -88,7 +88,7 @@ class Router {
         /**
          * * run the action **
          */
-        $controller->$action ();
+       $controller->$action ();
     }
 
     /**
