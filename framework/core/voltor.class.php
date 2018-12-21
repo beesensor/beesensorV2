@@ -82,7 +82,9 @@ Class Voltor {
 
         define("VIEW_PATH", APP_PATH . "views" . DS);
 
-        define("HELPER_PATH", FRAMEWORK_PATH . "helpers" . DS);
+        define("LOCALES_PATH", APP_PATH . "locales" . DS);
+
+        define("HELPER_PATH", APP_PATH . "helpers" . DS);
 
         define("CORE_PATH", FRAMEWORK_PATH . "core" . DS);
 
@@ -110,7 +112,7 @@ Class Voltor {
         include CONFIG_PATH . "config.php";
         $db = new Db($dbConfig);
         
-        $path = new Path(PUBLIC_PATH, CONFIG_PATH, UPLOAD_PATH, VIEW_PATH, LIB_PATH, $devConfig);
+        $path = new Path(PUBLIC_PATH, CONFIG_PATH, UPLOAD_PATH, VIEW_PATH, LIB_PATH, LOCALES_PATH, $devConfig);
         $this->registry->path = $path;
         $this->registry->db = $db;
         $this->registry->redisConfig=$redisConfig;

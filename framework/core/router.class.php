@@ -16,15 +16,21 @@ class Router {
     private $platform;
     private $controller;
     private $action;
+    private $lang;
+    private $expl;
     private $controllersPath;
     private $controllersDirectories;
     private $appConfig;
+    private $localesPath;
+
+    private $locales;
 
     function __construct($registry, $controllersPath, $controllerDirectories, $appConfig) {
         $this->registry = $registry;
         $this->controllersPath = $controllersPath;
         $this->controllersDirectories = $controllerDirectories;
         $this->appConfig = $appConfig;
+        $this->localesPath = $registry->path->localesPath;
     }
 
     /**
@@ -37,6 +43,12 @@ class Router {
      *
      */
     public function loader() {
+
+        /**
+         * Setejam els locales que tenim
+         */
+        $this->getLocales();
+
 
         $this->getController();
 
@@ -65,6 +77,8 @@ class Router {
          * instanciam la clase del template
          */
         $this->registry->platform = $this->platform;
+        $this->registry->lang = $this->lang;
+        $this->registry->expl = $this->expl;
         $this->registry->appConfig = $this->appConfig;
         $this->registry->template = new Template($this->registry);
 
@@ -92,6 +106,26 @@ class Router {
     }
 
     /**
+     * @get the locales
+     * 
+     * @access private
+     * 
+     * @return void
+     */
+    private function getLocales() {
+        $this->locales = array();
+        $directories = glob($this->localesPath."*", GLOB_ONLYDIR);
+        if ($directories) {
+            foreach($directories as $directory) {
+                $dir = str_replace($this->localesPath, "", $directory);
+                if (is_dir($this->localesPath.$dir)) {
+                    $this->locales[]=$dir;
+                }
+            }
+        }
+    }
+
+    /**
      *
      * @get the controller
      *
@@ -101,18 +135,14 @@ class Router {
      *
      */
     private function getController() {
+        $this->platform = "home";
+        $this->controller = "index";
+        $this->action = "index";
+        $this->lang = "es";
+        $this->expl = 0;
 
-        /**
-         * * get the route from the url **
-         */
         $route = (empty ( $_GET ['rt'] )) ? '' : $_GET ['rt'];
-        $c = null;
-
-        if (empty($route)) {
-            $this->platform = "home";
-            $this->controller = "index";
-            $this->action = "index";
-        } else {
+        if (!empty($route)) {
             if (substr($route, -1)=="/") {
                 $route = substr($route, 0, strlen($route)-1);
             }
@@ -120,68 +150,60 @@ class Router {
             $parts = explode("/", $route);
             $directories = $this->controllersDirectories;
 
-            if (count($parts)==1) {
+            $fPlatform = false;
+            $fLang = false;
+            $fExpl = false;
+            $fController = false;
+            $fAction = false;
 
-                if (in_array($parts[0], $directories)) {
-                    $this->platform = $parts[0];
-                    $c=1;
-                } else {
-                    $this->platform = "home";
+            foreach($parts as $part) {
+                $goNext = false;
+                if (!$fPlatform && in_array($part, $directories)) {
+                    $fPlatform=true;
+                    $goNext = true;
+                    $this->platform = $part;
                 }
 
-                if ($c==1) {
-                    $this->controller = "index";
-                } else {
-                    $this->controller = $parts[0];
+                if (!$goNext) {
+                    if (!$fLang && strlen($part)==2 && !is_numeric($part)) {
+                        foreach($this->locales as $locale) {
+                            if ($locale==$part) {
+                                $this->lang = $locale;
+                                $fLang = true;
+                                $goNext = true;
+                                break;
+                            }
+                        }
+                    }
                 }
 
-                $this->action = "index";
-                $c=1;
-            } elseif (count($parts)==2) {
+                if (!$goNext) {
+                    if (!$fExpl && is_numeric($part)) {
+                        $this->expl = intval($part);
+                        $fExpl = true;
+                        $goNext = true;
+                    }
+                }
 
-                if (in_array($parts[0], $directories)) {
-                    $this->platform = $parts[0];
-                    $c=1;
-                } else {
-                    $this->platform = "home";
-                    $c=0;
+                if (!$goNext) {
+                    if (!$fController) {
+                        $this->controller = $part;
+                        $fController = true;
+                        $goNext = true;
+                    }
                 }
-                $this->controller=$parts[$c];
-                $c++;
-                if ($c==1) {
-                    $this->action=$parts[$c];
-                } else {
-                    $this->action="index";
-                }
-                $c++;
-            } elseif (count($parts)==3) {
-                $directories = $this->controllersDirectories;
-                if (in_array($parts[0], $directories)) {
-                    $this->platform = $parts[0];
-                    $c=1;
-                } else {
-                    $this->platform = "home";
-                    $c=0;
-                }
-                $this->controller=$parts[$c];
-                $c++;
-                if ($c==2) {
-                    $this->action=$parts[$c];
-                } else {
-                    $this->action="index";
-                }
-                $c++;
-            } else {
-                $this->platform = $parts[0];
-                $this->controller = $parts[1];
-                $this->action = $parts[2];
-                $c=3;
 
-            }
+                if (!$goNext) {
+                    if (!$fAction) {
+                        $this->action = $part;
+                        $fAction = true;
+                        $goNext = true;
+                    }
+                }
 
-            while (isset($parts[$c])) {
-                $this->args[]=$parts[$c];
-                $c++;
+                if (!$goNext) {
+                    $this->args[] = $part;
+                }
             }
         }
 
@@ -191,17 +213,6 @@ class Router {
                     $this->parameters[$key] = $value;
                 }
             }
-        }
-
-        if (empty ( $this->controller )) {
-            $this->controller = 'index';
-        }
-
-        /**
-         * * Get action **
-         */
-        if (empty ( $this->action )) {
-            $this->action = 'index';
         }
 
         /**
@@ -214,7 +225,5 @@ class Router {
          */
         $this->file = $this->path . $this->controller . 'Controller.php';
     }
-
-
 }
 ?>

@@ -6,14 +6,16 @@ Class Path {
     public $templatesPath;
     public $sitePath;
     public $libPath;
+    public $localesPath;
     public $debug;
 
-    public function __construct($public, $config, $upload, $templates, $lib, $devConfig) {
+    public function __construct($public, $config, $upload, $templates, $lib, $localesPath, $devConfig) {
         $this->publicPath = $public;
         $this->configPath = $config;
         $this->uploadPath = $upload;
         $this->templatesPath = $templates;
         $this->libPath = $lib;
+        $this->localesPath = $localesPath;
         $this->debug = false;
         
         $devDir = "";

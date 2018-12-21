@@ -5,6 +5,8 @@ abstract class BaseController {
     protected $db;
     protected $template;
     protected $platform;
+    protected $lang;
+    protected $expl;
     protected $registry;
 
     public $args = array ();
@@ -17,7 +19,8 @@ abstract class BaseController {
         $this->redisConfig = $registry->redisConfig;
         $this->template = $registry->template;
         $this->platform = $registry->platform;
-        $this->setTemplateVar("sitePath", $this->path->sitePath .'/' .$this->platform);
+        $this->lang = $registry->lang;
+        $this->expl = $registry->expl;
     }
 
     abstract public function index();

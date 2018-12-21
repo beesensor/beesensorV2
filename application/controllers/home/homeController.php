@@ -35,7 +35,7 @@ abstract class HomeController extends BaseController {
         $_SESSION["alert"]=$alert;
     }
 
-    protected function setAlert($typw, $header, $msg) {
+    protected function setAlert($type, $header, $msg) {
         $alert = new Alert($type, $header, $msg);
         $this->setTemplateVar("alert", $alert->toString());
     }
