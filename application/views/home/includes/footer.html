@@ -1,0 +1,56 @@
+                </section>
+            </div>
+            <footer class="main-footer">
+                <div class="pull-right hidden-xs">
+                    <b>{$trad->get("version")}</b> 2.0.0
+                </div>
+                <strong>{$trad->get("software")} <a href="http://www.beesensor.com" target="blank">Beesensor Technologies S.L.</a></strong>
+            </footer>
+        </div>
+        <div class="modal fade" id="compose-modal-chart-list" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button id="cerrarDialogGrafica" type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title"><i class="fas fa-chart-bar"></i> {$trad->get("chartList")}</h4>
+                    </div>
+                    <div class="modal-body">
+                        <table class="table table-striped table-condensed">
+                        {loop="$grafiques"}
+                            <tr>
+                                {if="$value->tipus==0"}
+                                <td>
+                                    <i class="fas fa-chart-bar text-red"> </i>
+                                </td>
+                                <td>{$value->nom}</td>
+                                <td>{$trad->get("intTerm")}</td>
+                                <td>{function="Format::dateEnEs($value->fecAlt)"}</td>
+                                <td><a href="#"><i class="fas fa-arrow-circle-right text-green"> </i></a></td>
+                                {else}
+                                    {if="$value->tipus==-1"}
+                                    <td>
+                                        <i class="fas fa-chart-bar text-aqua"> </i>
+                                    </td>
+                                    <td>{$value->nom}</td>
+                                    <td>{$trad->get("climaVid")}</td>
+                                    <td>{function="Format::dateEnEs($value->fecAlt)"}</td>
+                                    <td><a href="#"><i class="fas fa-arrow-circle-right text-green"> </i></a></td>
+                                    {else}
+                                    <td>
+                                        <i class="fas fa-chart-bar text-green"> </i>
+                                    </td>
+                                    <td>{$value->nom}</td>
+                                    <td>{$tipus[$value->tipus]->descripcio}</td>
+                                    <td>{function="Format::dateEnEs($value->fecAlt)"}</td>
+                                    <td><a href="#"><i class="fas fa-arrow-circle-right text-green"> </i></a></td>
+                                    {/if}
+                                {/if}
+                            </tr>
+                        {/loop}
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

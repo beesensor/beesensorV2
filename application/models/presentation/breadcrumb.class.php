@@ -38,10 +38,10 @@ Class BreadCrumbItem {
 
     public function toString() {
         $stRet = "<li";
-        if (($this->hRef==null) || ($this->hRef=="")) {
+        if (($this->href==null) || ($this->href=="")) {
             $stRet .= ' class="active">'.$this->text.'</li>';
         } else {
-            $stRet .= '><a href="'.$this->hRef.'"><i class="'.$this->class.'"> </i> '.$this->text.'</a>';
+            $stRet .= '><a href="'.$this->href.'"><i class="'.$this->class.'"> </i> '.$this->text.'</a>';
         }
         $stRet .= '</li>';
         return $stRet;

@@ -36,7 +36,7 @@ Class Explotacio extends Model {
     public $lz;
 
     /**
-     * @var bool
+     * @var int|null
      */
     public $inici;
 
@@ -222,5 +222,50 @@ Class Explotacio extends Model {
         $cache = new RedisCache(self::cacheKey, $redisConfig);
         $cache->setItem($this->codi, $this);
         $cache->setCache(24 * 60 * 60);  
+    }
+
+    public function obteAlarmesActives(Db $db, array $redisConfig, string $usuariMail) {
+        $keyAlarmesActives = "ALARMESACTIVES_".$this->codi;
+        $cache = new RedisCache($keyAlarmesActives, $redisConfig);
+        if (!$cache->isCompletelyLoaded()) {
+            $sql = "SELECT alr_cod, exp_cod, nod_cod, pal_cod, usu_mail, alr_tipus, alr_status, alr_lec1, alr_lec2, fec_alarm, fec_alt, fec_mod, fec_baj
+                    FROM bee_alarm where alr_status=:status and exp_cod=:expCod and (fec_alt<=:fecAlt and (fec_baj>=:fecBaj or fec_baj is null))";
+            
+            $arrValues =array("status"=>0,
+                              "expCod"=>$this->codi,
+                              "fecAlt"=>date("Y-m-d"),
+                              "fecBaj"=>date("Y-m-d"));
+
+            if ($usuariMail!="") {
+                $sql.=" and usu_mail=:mail";
+                $arrValues["mail"]=$usuariMail;
+            }
+
+            $sql.=" order by alr_cod desc";
+
+            $STH = $db->getInstance()->prepare($sql);
+            $STH->execute($arrValues);
+            $STH->setFetchMode(PDO::FETCH_OBJ);
+
+            while ($row = $STH->fetch()) {
+                $alarma = new Alarma($row->alr_cod,
+                                     $row->exp_cod,
+                                     $row->nod_cod,
+                                     $row->pal_cod,
+                                     $row->usu_mail,
+                                     $row->alr_tipus,
+                                     $row->alr_status,
+                                     $row->alr_lec1,
+                                     $row->alr_lec2,
+                                     $row->fec_alarm,
+                                     $row->fec_alt,
+                                     $row->fec_mod,
+                                     $row->fec_baj);
+                $cache->setItem($alarma->codi, $alarma);
+            }
+            $cache->setCompletelyLoaded(true, 24 * 60 * 60);
+        }
+        $arrAlarmes = $cache->getDeserialized("Alarma");
+        return $arrAlarmes;
     }
 }

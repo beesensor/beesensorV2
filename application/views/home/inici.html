@@ -1,0 +1,129 @@
+{include="includes/top"}
+
+{if="$mapaOpcio==0"}
+<script type="text/javascript">
+
+var arrNodes = Array();
+var arrLatLng = Array();
+
+function carregaInfoWindow(nodCod, expCod, lang, marker, map) {
+	$.ajax({
+		type: 'GET',
+		url: '{$sitePath}'+lang+'/'+expCod+'/ajax/dadesNode',
+		data: 'node='+nodCod,
+		success: function(data) {
+			marker.bindPopup(data, { minWidth: 405});
+			marker.openPopup();
+		}
+	});
+}
+
+$(function(){
+    var ratio = $(window).height()/$(window).width();
+    ratio = ratio * 0.95;
+    var h=parseInt($('#mapa').width()*ratio,10);
+    $('#mapa').height(h);
+    
+    var mbAttr = 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>';
+    var mbUrl = 'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={$OMToken}';
+    
+    var streets = L.tileLayer(mbUrl, {id: 'mapbox.streets', attribution: mbAttr, accessToken: '{$OMToken}'});
+    var streetsSatellite = L.tileLayer(mbUrl, {id: 'mapbox.streets-satellite',  attribution: mbAttr, accessToken: '{$OMToken}'});
+    
+    var map = L.map('mapa', {
+		center: [{$mapLat}, {$mapLng}],
+		zoom: 16,
+		layers: [streets]
+    });
+    
+    var baseLayers = {
+        "Callejero": streets,
+        "Satélite": streetsSatellite
+    }
+
+    L.control.layers(baseLayers).addTo(map);
+
+    var greenIcon = L.icon({
+		iconUrl: '{$publicPath}images/pointer_ok.png',
+		shadowUrl: '{$publicPath}images/pointer_shadow.png',
+
+		iconSize:     [24, 24], // size of the icon
+		shadowSize:   [40, 24], // size of the shadow
+		iconAnchor:   [12, 24], // point of the icon which will correspond to marker's location
+		shadowAnchor: [20, 24],  // the same for the shadow
+		popupAnchor:  [0, -20] // point from which the popup should open relative to the iconAnchor
+    });
+    
+    {$i=0}
+    {loop="$nodes"}
+        arrNodes.push(['{$value->codi}','{$value->descripcio}']);
+        arrLatLng.push({ lat: {$value->lat}, lng: {$value->lng}});
+
+        var marker{$i} = L.marker([{$value->lat}, {$value->lng}], {title: '{$value->descripcio}', icon: greenIcon}).addTo(map);
+		marker{$i}.on('click', function() {
+			carregaInfoWindow('{$value->codi}','{$explotacioActiva->codi}','{$lang}', this, map);
+		});
+    {$i=$i+1};
+    {/loop}
+
+    var n=null;
+	var s=null;
+	var e=null;
+    var w=null;
+    
+    for (var k=0;k<arrLatLng.length;k++) {
+		if ((!n) || (arrLatLng[k].lat>n)) {
+			n=arrLatLng[k].lat;
+		}
+		if ((!s) || (arrLatLng[k].lat<s)) {
+			s=arrLatLng[k].lat;
+		}
+		if ((!e) || (arrLatLng[k].lng>e)) {
+			e=arrLatLng[k].lng;
+		}
+		if ((!w) || (arrLatLng[k].lng<w)) {
+			w=arrLatLng[k].lng;
+		}
+    }
+
+    var cornerNE=L.latLng(n,e);
+	var cornerSW=L.latLng(s,w);
+	map.fitBounds([cornerNE, cornerSW]);
+	var zoom = getZoomLevel(cornerNE, cornerSW,$('#mapa').width(),$('#mapa').height());
+    map.setZoom(zoom);
+    
+    function getZoomLevel(cornerNE, cornerSW, widthContainer, heightContainer) {
+		var WORLD_DIM = { height: 256, width: 256 };
+	    var ZOOM_MAX = 21;
+	    
+	    function latRad(lat) {
+	        var sin = Math.sin(lat * Math.PI / 180);
+	        var radX2 = Math.log((1 + sin) / (1 - sin)) / 2;
+	        return Math.max(Math.min(radX2, Math.PI), -Math.PI) / 2;
+	    }
+
+	    function zoom(mapPx, worldPx, fraction) {
+	        return Math.floor(Math.log(mapPx / worldPx / fraction) / Math.LN2);
+	    }
+	    
+	    var latFraction = (latRad(cornerNE.lat) - latRad(cornerSW.lat)) / Math.PI;
+	    var lngDiff = cornerNE.lng - cornerSW.lng;
+	    var lngFraction = ((lngDiff < 0) ? (lngDiff + 360) : lngDiff) / 360;
+
+	    var latZoom = zoom(heightContainer-20, WORLD_DIM.height, latFraction);
+	    var lngZoom = zoom(widthContainer-20, WORLD_DIM.width, lngFraction);
+
+	    return Math.min(latZoom, lngZoom, ZOOM_MAX);
+	}
+});
+</script>
+{/if}
+
+{include="includes/menu"}
+{autoescape="off"}{$alert}{/autoescape}
+{if="$mapaOpcio==0"}
+<!-- Inici normal-->
+{include="mapaIniciNormal"}
+
+{/if}
+{include="includes/footer"}

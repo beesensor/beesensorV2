@@ -3,9 +3,20 @@
 .login-page {
     background-color: #222d32;
 }
+
+.login-box-body {
+    border-radius: 8px;
+}
 </style>
 <script type="text/javascript">
-
+    $(function() {
+		$("form").submit(function() {
+	        $("#pass").val(hex_sha512($("#password").val()));
+            $('#passMd5').val(hex_md5($('#password').val()));
+            $("#password").val("");
+			return true;
+		});
+	});
 </script>
 </head>
 <body class="hold-transition login-page">
@@ -21,26 +32,33 @@
                 </div>
             </div>
             {/if}
-            <p class="login-box-msg">Introduzca sus credenciales para iniciar sesi&oacute;n</p>
+            <p class="login-box-msg">{$trad->get("intr")}</p>
             <div class="row">
                 <div class="form-group col-xs-12">
                     <label for="mail">Email:</label>
-                    <input type="text" class="form-control" id="mail" name="mail" placeholder="Email del usuario" />
+                    <input type="text" class="form-control" id="mail" name="mail" placeholder="{$trad->get("mail")}" />
                 </div>
             </div>
             <div class="row">
                 <div class="form-group col-xs-12">
                     <label for="password">Password:</label>
-                    <input type="password" class="form-control" id="password" name="password" placeholder="Password del usuario" />
+                    <input type="password" class="form-control" id="password" name="password" placeholder="{$trad->get("pass")}" />
                     <input type="hidden" id="pass" name="pass" />
+                    <input type="hidden" id="passMd5" name="passMd5" />
                 </div>
             </div>
             <div class="row">
                 <div class="col-xs-12 clearfix">
                     <button type="submit" class="btn btn-success pull-right">
-                        <i class="fa fa-unlock-alt"> </i> Acceder
+                        <i class="fa fa-unlock-alt"> </i> {$trad->get("access")}
                     </button>
                 </div>
+            </div>
+            <div class="row">&nbsp;</div>
+            <div class="row">
+                <div class="col-md-4 text-center"><a href="{$sitePath}es">{$trad->get("es")}</a></div>
+                <div class="col-md-4 text-center"><a href="{$sitePath}ca">{$trad->get("ca")}</a></div>
+                <div class="col-md-4 text-center"><a href="{$sitePath}en">{$trad->get("en")}</a></div>
             </div>
         </form>
     </div>

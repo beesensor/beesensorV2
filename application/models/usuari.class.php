@@ -147,7 +147,7 @@ Class Usuari extends Model {
                                  $row->usu_maxmin,
                                  $row->usu_telf,
                                  $row->usu_initOffset,
-                                 $row->usu_initUpdat,
+                                 $row->usu_initUpdate,
                                  $row->fec_alt,
                                  $row->fec_mod,
                                  $row->fec_baj);
@@ -199,11 +199,16 @@ Class Usuari extends Model {
         $this->salt = hash("sha512", uniqid(mt_rand(1, mt_getrandmax()), true));
         $this->password = hash("sha512", $this->password.$this->salt);
 
+        $cif = null;
+        if (!is_null($this->client)) {
+            $cif = $this->client->cif;
+        }
+
         $sql = "insert into bee_usuaris (usu_mail, cli_cif, usu_pass, usu_password, usu_salt, usu_nom, usu_exp, usu_zon, usu_nod, usu_tip_sen, usu_lec, usu_lang, usu_admin, usu_alarms,
                                          usu_alarmscomp, usu_maxmin, usu_telf, usu_initOffset, usu_initUpdate, fec_alt, fec_mod) values (
                                          :mail, :cif, :pass, :password, :salt, :nom, :exp, :zon, :nod, :tipSen, :lec, :lang, :admin, :alarms, :alarmscomp, :maxmin, :telf, :initOffset, :initUpdate, :fecAlt, :fecMod)";
         $arrValues = array("mail" => $this->mail,
-                           "cif"  => $this->client->cif,
+                           "cif"  => $cif,
                            "pass" => $this->pass,
                            "password" => $this->password,
                            "salt" => $this->salt,
@@ -229,11 +234,10 @@ Class Usuari extends Model {
         $this->setActualDates(true);
     }
 
-    public function udpate(Db $db, array $redisConfig) {
-        $sql = "update bee_usuaris set cli_cif=:cif,";
+    public function update(Db $db, array $redisConfig) {
+        $sql = "update bee_usuaris set ";
 
         $arrValues = array( "mail" => $this->mail,
-                            "cif"  => $this->client->cif,
                             "nom"  => $this->nom,
                             "exp"  => $this->explotacions,
                             "zon"  => $this->zones,
@@ -248,10 +252,22 @@ Class Usuari extends Model {
                             "telf" => $this->telefono,
                             "initOffset" => $this->initOffset,
                             "initUpdate" => $this->initUpdate,
-                            "fecMod" => date(Y-m-d));
+                            "fecMod" => date("Y-m-d"));
+        
+        if (!is_null($this->client)) {
+            $sql.="cli_cif=:cif, ";
+            $arrValues["cif"]=$this->client->cif; 
+        } else {
+            $sql.="cli_cif=null, ";
+        }
 
         if (isset($this->password) && $this->password!="") {
             $sql.=" usu_password=:password,";
+            if (!isset($this->salt) || is_null($this->salt) || $this->salt=="") {
+                $this->salt = hash("sha512", uniqid(mt_rand(1, mt_getrandmax()), true));
+                $sql.=" usu_salt=:salt,";
+                $arrValues["salt"]=$this->salt;
+            }
             $arrValues["password"] = hash("sha512", $this->password.$this->salt);
         }
 
@@ -260,7 +276,7 @@ Class Usuari extends Model {
             $arrValues["pass"] = $this->pass;
         }
 
-        $sql.= " usu_nom=:nom, usu_exp=:exp, usu_zon=:zon, usu_nod=:nod, usu_tip_sen=:tipSen, usu_lec=:lec, usu_lang=:lang
+        $sql.= " usu_nom=:nom, usu_exp=:exp, usu_zon=:zon, usu_nod=:nod, usu_tip_sen=:tipSen, usu_lec=:lec, usu_lang=:lang, 
                 usu_admin=:admin, usu_alarms=:alarms, usu_alarmscomp=:alarmsComp, usu_maxmin=:maxmin, usu_telf=:telf, usu_initOffset=:initOffset, usu_initUpdate=:initUpdate, fec_mod=:fecMod where usu_mail=:mail";
         
         $STH = $db->getInstance()->prepare($sql);
@@ -278,7 +294,7 @@ Class Usuari extends Model {
 
     public function setNewPassword(Db $db) {
         $this->salt = hash("sha512", uniqid(mt_rand(1, mt_getrandmax()), true));
-        $this->password = hash("sha512", $this->pass.$this->salt);
+        $this->password = hash("sha512", $this->password.$this->salt);
         $sql = "update bee_usuaris set usu_password=:password, usu_salt=:salt where usu_mail=:mail";
         $arrValues=array("mail"=>$this->mail,
                          "password"=>$this->password,

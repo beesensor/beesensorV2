@@ -101,7 +101,7 @@ Class Client extends Model {
         $this->smsPassword = $smsPassword;
     }
 
-    public static function get(Db $db, array $redisConfig, string $cif) : Client {
+    public static function get(Db $db, array $redisConfig, string $cif) {
         $cache = new RedisCache(self::cacheKey, $redisConfig);
         $client = $cache->getItemDeserialized($cif, new Client());
         if ($client==null) {
@@ -124,7 +124,7 @@ Class Client extends Model {
         return $client;
     }
 
-    public static function all(Db $db, array $redisConfig, bool $deleted = false) : array {
+    public static function all(Db $db, array $redisConfig, bool $deleted = false) {
         $cache = new RedisCache(self::cacheKey, $redisConfig);
         if (!$cache->isCompletelyLoaded()) {
             $sql = "select cli_cif, cli_nom, cli_dir, cli_cp, cli_pob, cli_prov, cli_pais, cli_tel1, cli_tel2, cli_fax, cli_mail, cli_url, 
@@ -159,7 +159,7 @@ Class Client extends Model {
         return $arrClients;
     }
 
-    public function insert(Db $db, array $redisConfig) : void {
+    public function insert(Db $db, array $redisConfig) {
         $sql = "insert into bee_clients (cli_cif, cli_nom, cli_dir, cli_cp, cli_pob, cli_prov, cli_pais, cli_tel1, cli_tel2, cli_fax, cli_mail, cli_url, 
         cli_sms, cli_smsLogin, cli_smsPass, fec_alt, fec_mod) values 
         (:cif, :nom, :dir, :cp, :pob, :prov, :pais, :tel1, :tel2, :fax, :mail, :url, :sms, :smsLogin, :smsPass, :fecAlt, :fecMod)";

@@ -1,0 +1,27 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="nav-tabs-custom">
+            <ul class="nav nav-tabs">
+                <li class="active">
+                    <a href="#tabMapa" data-toggle="tab">{$trad->get("exploitationMap")}</a>
+                </li>
+                {if="$explotacioActiva->prediccio"}
+                <li>
+                    <a href="#tabPrediccio" data-toggle="tab">{$trad->get("weatherInfo")}</a>
+                </li>
+                {/if}
+                <li class="pull-right">
+                    <button class="btn btn-success" data-target="#compose-modal" data-toggle="modal">Lectures actuals</button>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane active" id="tabMapa">
+                    <div id="mapa" style="width: 100%;"></div>
+                </div>
+                {if="$explotacioActiva->prediccio"}
+                <div class="tab-pane" id="tabPrediccio"></div>
+                {/if}
+            </div>
+        </div>
+    </div>
+</div>

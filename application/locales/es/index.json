@@ -1,5 +1,8 @@
 {
     "intr": "Introduzca sus credenciales para iniciar sesi&oacute;n",
     "noAccess": "Sin acceso",
-    "noOkData": "Los datos introducidos no son correctos"
+    "noOkData": "Los datos introducidos no son correctos",
+    "mail": "Email del usuario",
+    "pass": "Password del usuario",
+    "access": "Acceder"
 }

@@ -32,6 +32,7 @@ $appConfig = array(
     "menuNomApp"=>"Bee<b>sensor</b>",
     "menuNomAppS"=>"B<b>s</b>",
     "appDesc"=>"Intranet de Beesensor",
-    "author"=>"Miquel &Agrave;ngel Mayol"
+    "author"=>"Miquel &Agrave;ngel Mayol",
+    "OMToken"=>"pk.eyJ1IjoiYmVlc2Vuc29yIiwiYSI6ImNqcDFoZjB6YTM1NXgzbW5yMnhtb2g1OWgifQ.EM1XQcft-9ota29_33Flyw"
 );
 ?>

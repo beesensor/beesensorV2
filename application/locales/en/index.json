@@ -1,0 +1,8 @@
+{
+    "intr": "Enter your login data to start your session",
+    "noAccess": "No access",
+    "noOkData": "The supplied data is not correct",
+    "mail": "User's email",
+    "pass": "User's password",
+    "access": "Enter"
+}

@@ -1,0 +1,401 @@
+<style type="text/css">
+    .sidebar-toggle:before {
+        font-weight: 900;
+        font-family: "Font Awesome 5 Free";
+    }
+    .text-white {
+        color: #ffffff !important;
+    }
+
+    .selectize-dropdown [data-selectable].option {
+        cursor: pointer;
+    }
+
+    .selectize-dropdown .active {
+        background-color: #c6d04b;
+        color: #ffffff;
+    }
+
+    .fas {
+        font-size: 12pt;
+    }
+
+    h4 > .fas {
+        font-size: 15pt;
+    }
+
+    .table {
+        font-size: 12px;
+    }
+
+    .treeview > ul > li > a > i {
+        width: 20px;
+    }
+
+    .main-header .navbar .nav>li>a>.label {
+        font-size: 11px;
+    }
+</style>
+<script type="text/javascript">
+    $(function(){
+        $("#cboClients").selectize();
+        $("#cboExplotacions").selectize();
+
+        $("#cboClients").change(function(){
+            this.form.submit();
+        });
+
+        $("#cboExplotacions").change(function(){
+            this.form.submit();
+        });        
+    });
+</script>
+</head>
+<body class="hold-transition skin-green sidebar-mini">
+    <div class="wrapper">
+        <header class="main-header">
+                <a href="{$sitePath}/inicio" class="logo">
+                    <span class="logo-mini">{autoescape="off"}{$menuNomAppS}{/autoescape}</span>
+                    <span class="logo-lg">{autoescape="off"}{$menuNomApp}{/autoescape}</span>
+                </a>
+                <nav class="navbar navbar-static-top">
+                    <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
+                        <span class="sr-only">Toggle navigation</span>
+                    </a>
+                    <form class="navbar-form navbar-left" method="POST">
+                        <div class="form-group">
+                            <label for="cboClients" class="text-white">{$trad->get("customer")}: </label>
+                            <select class="form-control" name="cboClients" id="cboClients" style="width: 250px;">
+                                {loop="$clients"}
+                                    <option value="{$value->cif}"{if="$value->cif==$clientSeleccionat"} selected="selected"{/if}>{$value->nom}</option>
+                                {/loop}
+                            </select>
+                        </div>
+                    </form>
+                    <form class="navbar-form navbar-left" method="POST">
+                        <div class="form-group">
+                            <label class="text-white" for="cboExplotacions">{$trad->get("exploitation")}: </label>
+                            <select class="form-control" name="cboExplotacions" id="cboExplotacions" style="width: 250px;">
+                                {loop="$explotacions"}
+                                    <option value="{$value->codi}"{if="$value->codi==$explotacioSeleccionada"} selected="selected"{/if}>{$value->descripcio}</option>
+                                {/loop}
+                            </select>
+                        </div>
+                    </form>
+                    <div class="navbar-form navbar-left">
+                        <a href="{$sitePath}" class="btn btn-danger text-white">
+                            <i class="fas fa-exclamation-circle"> </i> {$trad->get("problems")}
+                        </a>
+                    </div>
+                    <div class="navbar-custom-menu">
+                        <ul class="nav navbar-nav">
+                            <li class="dropdown notifications-menu">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                    <span>&nbsp;</span>
+                                    <i class="fas fa-file-alt"></i>
+                                    <span class="label label-success">{function="count($documentacions)"}</span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li class="header">{$trad->get("doc")}</li>
+                                    <li>
+                                        <ul class="menu">
+                                        {loop="$documentacions"}
+                                            <li>
+                                                <a href="{$publicPath}uploads/docs/{$value->url}" target="blank">
+                                                {if="$value->explotacio==null"}
+                                                    <i class="fas fa-file-alt text-green">&nbsp;</i> 
+                                                {else}
+                                                    <i class="fas fa-file-alt text-aqua">&nbsp;</i> 
+                                                {/if}
+                                                {$value->descripcio}
+                                                </a>
+                                            </li>    
+                                        {/loop}
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="dropdown notifications-menu">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                    <span>&nbsp;</span>
+                                    <i class="fas fa-chart-bar"></i>
+                                    <span class="label label-success">{function="count($grafiques)"}</span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li class="header">{$trad->get("charts")}</li>
+                                    <li>
+                                        <ul class="menu">
+                                        {$count=1}
+                                        {loop="$grafiques"}
+                                            {if="$count<5"}
+                                                <li>
+                                                {if="$value->tipus==0"}
+                                                    <a href="{$sitePath}">
+                                                        <i class="fas fa-chart-bar text-red"> </i>&nbsp;{$value->nom}
+                                                    </a>
+                                                {else}
+                                                    {if="$value->tipus==-1"}
+                                                    <a href="{$sitePath}">
+                                                        <i class="fas fa-chart-bar text-aqua"> </i>&nbsp;{$value->nom}
+                                                    </a>
+                                                    {else}
+                                                    <a href="{$sitePath}">
+                                                        <i class="fas fa-chart-bar text-green"> </i>&nbsp;{$value->nom}
+                                                    </a>
+                                                    {/if}
+                                                {/if}
+                                                </li>
+                                            {/if}
+                                            {$count=$count+1}
+                                        {/loop}
+                                        </ul>
+                                    </li>
+                                    <li class="footer">
+                                        <a href="#" data-target="#compose-modal-chart-list" data-toggle="modal">{$trad->get("viewAll")}</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="dropdown messages-menu">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                    <span>&nbsp;</span>
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <span class="label label-danger">{function="count($alarmesActives)"}</span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li class="header">{function="count($alarmesActives)"} {$trad->get("activeAlarms")}</li>
+                                    <li>
+                                        <ul class="menu">
+                                        {$count=1}
+                                        {loop="$alarmesActives"}
+                                            {if="$count<10"}
+                                                <li>
+                                                {if="$value->tipus==0"}
+                                                    <a href="{$sitePath}">
+                                                        <div class="pull-left">
+                                                            <i class="fas fa-satellite-dish text-red"> </i>&nbsp;
+                                                        </div>
+                                                        <h4>{function="Format::dateTimeEnEs($value->dataAlarma)"}</h4>
+                                                        <p>{$trad->get("communicationAlarm")}</p>
+                                                    </a>
+                                                {else}
+                                                    {if="$value->tipus==1"}
+                                                    <a href="{$sitePath}">
+                                                        <div class="pull-left">
+                                                            <i class="fas fa-bell text-red"> </i>&nbsp;
+                                                        </div>
+                                                        <h4>{function="Format::dateTimeEnEs($value->dataAlarma)"}</h4>
+                                                        <p>{$trad->get("readingAlarm")}</p>
+                                                    </a>
+                                                    {else}
+                                                    <a href="{$sitePath}">
+                                                        <div class="pull-left">
+                                                            <i class="fas fa-not-equal text-red"> </i>&nbsp;
+                                                        </div>
+                                                        <h4>{function="Format::dateTimeEnEs($value->dataAlarma)"}</h4>
+                                                        <p>{$trad->get("comparativeAlarm")}</p>
+                                                    </a>
+                                                    {/if}
+                                                {/if}
+                                                </li>
+                                            {/if}
+                                            {$count=$count+1}
+                                        {/loop}
+                                        </ul>
+                                    </li>
+                                    <li class="footer">
+                                        <a href="#" data-target="#compose-modal-chart-list" data-toggle="modal">{$trad->get("viewAll")}</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="dropdown user user-menu">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                    <i class="fas fa-user"></i>&nbsp;&nbsp;{$userName}
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li class="user-header">
+                                        <p>
+                                            {$userName}
+                                            <small>{$userEmail}</small>
+                                        </p>
+                                    </li>
+                                    <li class="user-body">
+                                        <div class="row">
+                                            <div class="col-xs-4 text-center">
+                                                <a href="{$sitePath}es/{$explotacioSeleccionada}/{$controller}">{$trad->get("es")}</a>
+                                            </div>
+                                            <div class="col-xs-4 text-center">
+                                                <a href="{$sitePath}ca/{$explotacioSeleccionada}/{$controller}">{$trad->get("ca")}</a>
+                                            </div>
+                                            <div class="col-xs-4 text-center">
+                                                <a href="{$sitePath}en/{$explotacioSeleccionada}/{$controller}">{$trad->get("en")}</a>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="user-footer">
+                                        <div class="pull-left">
+                                            <span class="btn btn-default btn-flat">{$trad->get("profile")}</span>
+                                        </div>
+                                        <div class="pull-right">
+                                            <span class="btn btn-default btn-flat">{$trad->get("exit")}</span>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+        </header>
+        <aside class="main-sidebar">
+            <section class="sidebar">
+                <ul class="sidebar-menu" data-widget="tree">
+                    <li class="header">{$trad->get("nav")}</li>
+                    <li class="treeview{if="$menuOpen=='1'"} active menu-open{/if}">
+                        <a href="#">
+                            <i class="fas fa-home"> </i>&nbsp;&nbsp;<span>{$trad->get("home")}</span>
+                            <span class="pull-right-container">
+                                <i class="fas fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li><a href="{$sitePath}{$lang}/{$explotacioSeleccionada}/inici"><i class="fas fa-tachometer-alt"> </i>&nbsp;&nbsp;{$trad->get("home")}</a></li>
+                            <li><a href="{$sitePath}{$lang}/{$explotacioSeleccionada}/sortir"><i class="fas fa-sign-out-alt"> </i>&nbsp;&nbsp;{$trad->get("exit")}</a></li>
+                        </ul>
+                    </li>
+                    {if="$userCliCif==''"}
+                    <li class="treeview{if="$menuOpen=='2'"} active menu-open{/if}">
+                        <a href="#">
+                            <i class="fas fa-th-list"> </i>&nbsp;&nbsp;<span>{$trad->get("generalManagement")}</span>
+                            <span class="pull-right-container">
+                                <i class="fas fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li><a href="{$sitePath}{$lang}/{$explotacioSeleccionada}/clients"><i class="fas fa-user-tie"> </i>&nbsp;&nbsp;{$trad->get("customers")}</a></li>
+                            <li><a href="{$sitePath}{$lang}/{$explotacioSeleccionada}/explotacions"><i class="fas fa-industry"> </i>&nbsp;&nbsp;{$trad->get("exploitations")}</a></li>
+                            <li><a href="{$sitePath}{$lang}/{$explotacioSeleccionada}/usuaris"><i class="fas fa-user"> </i>&nbsp;&nbsp;{$trad->get("users")}</a></li>
+                            <li><a href="{$sitePath}{$lang}/{$explotacioSeleccionada}/documentacio?gen=1"><i class="fas fa-file-alt"> </i>&nbsp;&nbsp;{$trad->get("techDocs")}</a></li>
+                        </ul>
+                    </li>
+                    {/if}
+                    <li class="treeview{if="$menuOpen=='3'"} active menu-open{/if}">
+                        <a href="#">
+                            <i class="fas fa-th"> </i>&nbsp;&nbsp;<span>{$trad->get("management")}</span>
+                            <span class="pull-right-container">
+                                <i class="fas fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li><a href="{$sitePath}{$lang}/{$explotacioSeleccionada}/configuracioInici?usuari=1"><i class="fas fa-cog"> </i>&nbsp;&nbsp;{$trad->get("config")}</a></li>
+                            {if="$userCliCif==''"}
+                            <li><a href="{$sitePath}{$lang}/{$explotacioSeleccionada}/zones"><i class="fas fa-map-marked"> </i>&nbsp;&nbsp;{$trad->get("zones")}</a></li>
+                            <li><a href="{$sitePath}{$lang}/{$explotacioSeleccionada}/nodes"><i class="fas fa-broadcast-tower"> </i>&nbsp;&nbsp;{$trad->get("nodes")}</a></li>
+                            <li><a href="{$sitePath}{$lang}/{$explotacioSeleccionada}/tipusSensors"><i class="fas fa-code-branch"> </i>&nbsp;&nbsp;{$trad->get("sensorTypes")}</a></li>
+                            <li><a href="{$sitePath}{$lang}/{$explotacioSeleccionada}/sensors"><i class="fas fa-stroopwafel"> </i>&nbsp;&nbsp;{$trad->get("sensors")}</a></li>
+                            <li><a href="{$sitePath}{$lang}/{$explotacioSeleccionada}/sensorsVirtuals"><i class="fas fa-globe"> </i>&nbsp;&nbsp;{$trad->get("virtualSensors")}</a></li>
+                            <li><a href="{$sitePath}{$lang}/{$explotacioSeleccionada}/formules"><i class="fas fa-square-root-alt"> </i>&nbsp;&nbsp;{$trad->get("formulae")}</a></li>
+                            <li><a href="{$sitePath}{$lang}/{$explotacioSeleccionada}/calculsExplotacio"><i class="fas fa-calculator"> </i>&nbsp;&nbsp;{$trad->get("calculations")}</a></li>
+                            <li><a href="{$sitePath}{$lang}/{$explotacioSeleccionada}/grafiquesPersonalitzades"><i class="fas fa-chart-line"> </i>&nbsp;&nbsp;{$trad->get("personalizedCharts")}</a></li>
+                            <li><a href="{$sitePath}{$lang}/{$explotacioSeleccionada}/alarmesComparatives"><i class="fas fa-bell"> </i>&nbsp;&nbsp;{$trad->get("comparativeAlarms")}</a></li>
+                            {/if}
+                            {if="$user->alarms"}
+                            <li><a href="{$sitePath}{$lang}/{$explotacioSeleccionada}/alarmesLectures"><i class="far fa-bell"> </i>&nbsp;&nbsp;{$trad->get("readingAlarms")}</a></li>
+                            {/if}
+                            {if="$user->maxmin"}
+                            <li><a href="{$sitePath}{$lang}/{$explotacioSeleccionada}/offsets"><i class="fas fa-plus"> </i>&nbsp;&nbsp;Offsets</a></li>
+                            {/if}
+                            {if="$userCliCif==''"}
+                            <li><a href="{$sitePath}{$lang}/{$explotacioSeleccionada}/documentacio"><i class="fas fa-file-alt"> </i>&nbsp;&nbsp;{$trad->get("explDocs")}</a></li>
+                            <li><a href="{$sitePath}{$lang}/{$explotacioSeleccionada}/sistemesExterns"><i class="fas fa-satellite-dish"> </i>&nbsp;&nbsp;{$trad->get("externalSystems")}</a></li>
+                            {/if}
+                        </ul>
+                    </li>
+                    {loop="$tipus"}
+                        {if="($value->admin==true && $userCliCif=='') || $value->admin==false"}
+                        <li class="treeview{if="'4-'.$value->codi==$menuOpen"} active menu-open{/if}">
+                            <a href="#">
+                                <i class="fas fa-chart-bar"> </i>&nbsp;&nbsp;<span>{$value->descripcio}</span>
+                                <span class="pull-right-container">
+                                    <i class="fas fa-angle-left pull-right"></i>
+                                </span>
+                            </a>
+                            <ul class="treeview-menu">
+                                {if="$value->lectures==true"}
+                                <li><a href="{$sitePath}{$lang}/{$explotacioSeleccionada}/lectures?tipsens={$value->codi}"><i class="fas fa-chart-line"> </i>&nbsp;&nbsp;{$trad->get("readings")}</a></li>
+                                {/if}
+                                
+                                {loop="$grafiquesPertipus[$value->codi]"}
+                                    <li><a href="{$sitePath}{$lang}/{$explotacioSeleccionada}/lecturesPersonalitzades?codi={$value->codi}"><i class="fas fa-chart-line"> </i>&nbsp;&nbsp;{$value->descripcioES}</a></li>
+                                {/loop}
+
+                                {if="$value->prediccio==true"}
+                                <li><a href="{$sitePath}{$lang}/{$explotacioSeleccionada}/prediccio?tipsens={$value->codi}"><i class="fas fa-cloud-sun-rain"> </i>&nbsp;&nbsp;{$trad->get("forecast")}</a></li>
+                                {/if}
+                                {if="$value->fotoperiode==true"}
+                                <li><a href="{$sitePath}{$lang}/{$explotacioSeleccionada}/fotoperiode?tipsens={$value->codi}"><i class="fas fa-sun"> </i>&nbsp;&nbsp;{$trad->get("photoperiod")}</a></li>
+                                {/if}
+                                {if="$value->horesfred==true"}
+                                <li><a href="{$sitePath}{$lang}/{$explotacioSeleccionada}/horesFred?tipsens={$value->codi}"><i class="fas fa-snowflake"> </i>&nbsp;&nbsp;{$trad->get("chillingHours")}</a></li>
+                                {/if}
+                                {if="$value->inttermica==true"}
+                                <li><a href="{$sitePath}{$lang}/{$explotacioSeleccionada}/integralTermica?tipsens={$value->codi}"><i class="fas fa-thermometer-three-quarters"> </i>&nbsp;&nbsp;{$trad->get("intTerm")}</a></li>
+                                {/if}
+                                {if="$value->climaVid==true"}
+                                <li><a href="{$sitePath}{$lang}/{$explotacioSeleccionada}/indexClimaticVinya?tipsens={$value->codi}"><i class="fab fa-canadian-maple-leaf"> </i>&nbsp;&nbsp;{$trad->get("climaVid")}</a></li>
+                                {/if}
+                            </ul>
+                        </li>
+                        {/if}
+                    {/loop}
+                    <li class="treeview{if="$menuOpen=='5'"} active menu-open{/if}">
+                        <a href="#">
+                            <i class="fas fa-exclamation-triangle"> </i>&nbsp;&nbsp;<span>{$trad->get("alarms")}</span>
+                            <span class="pull-right-container">
+                                <i class="fas fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li><a href="{$sitePath}{$lang}/{$explotacioSeleccionada}/alarmes?actives=1"><i class="fas fa-bell"> </i>&nbsp;&nbsp;{$trad->get("activeAlarms")}</a></li>
+                            <li><a href="{$sitePath}{$lang}/{$explotacioSeleccionada}/alarmes"><i class="fas fa-bell-slash"> </i>&nbsp;&nbsp;{$trad->get("histAlarms")}</a></li>
+                        </ul>
+                    </li>
+                    {if="$userCliCif=='' || $clients[$clientSeleccionat]->sms"}
+                        <li class="treeview{if="$menuOpen=='6'"} active menu-open{/if}">
+                            <a href="#">
+                                <i class="fas fa-sms"> </i>&nbsp;&nbsp;<span>SMS</span>
+                                <span class="pull-right-container">
+                                    <i class="fas fa-angle-left pull-right"></i>
+                                </span>
+                            </a>
+                            <ul class="treeview-menu">
+                                <li><a href="{$sitePath}{$lang}/{$explotacioSeleccionada}/informeSMS"><i class="fas fa-mobile-alt"> </i>&nbsp;&nbsp;{$trad->get("SMSreport")}</a></li>
+                                {if="$userCliCif==''"}
+                                <li><a href="{$sitePath}{$lang}/{$explotacioSeleccionada}/gestioSMS"><i class="fas fa-money-bill"> </i>&nbsp;&nbsp;{$trad->get("SMSmanagement")}</a></li>
+                                {/if}
+                            </ul>
+                        </li>
+                    {/if}
+                    {if="$userCliCif==''"}
+                    <li class="treeview{if="$menuOpen=='7'"} active menu-open{/if}">
+                        <a href="#">
+                            <i class="fas fa-tools"> </i>&nbsp;&nbsp;<span>{$trad->get("tools")}</span>
+                            <span class="pull-right-container">
+                                <i class="fas fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li><a href="{$sitePath}{$lang}/{$explotacioSeleccionada}/configuracioInici"><i class="fas fa-cogs"> </i>&nbsp;&nbsp;{$trad->get("config")}</a></li>
+                        </ul>
+                    </li>
+                    {/if}
+                </ul>
+            </section>
+        </aside>
+        <div class="content-wrapper">
+            <section class="content-header">
+                <h1>
+                    {$h1}
+                    <small>{$h2}</small>
+                </h1>
+                <ol class="breadcrumb">{autoescape="off"}{$breadCrumb}{/autoescape}</ol>
+            </section>
+            <section class="content">

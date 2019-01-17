@@ -11,6 +11,7 @@ class Router {
     private $path;
     private $args = array ();
     private $parameters = array();
+    private $post = array();
 
     private $file;
     private $platform;
@@ -89,6 +90,7 @@ class Router {
         $controller = new $class ( $this->registry );
         $controller->args = $this->args;
         $controller->parameters = $this->parameters;
+        $controller->post = $this->post;
 
         /**
          * * check if the action is callable **
@@ -212,6 +214,12 @@ class Router {
                 if ($key!="rt") {
                     $this->parameters[$key] = $value;
                 }
+            }
+        }
+
+        if (isset($_POST)) {
+            foreach($_POST as $key => $value) {
+                $this->post[$key] = $value;
             }
         }
 

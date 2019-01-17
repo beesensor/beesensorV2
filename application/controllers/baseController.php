@@ -3,6 +3,7 @@ abstract class BaseController {
 
     protected $path;
     protected $db;
+    protected $redisConfig;
     protected $template;
     protected $platform;
     protected $lang;
@@ -11,6 +12,7 @@ abstract class BaseController {
 
     public $args = array ();
     public $parameters = array();
+    public $post = array();
 
     function __construct($registry) {
         $this->path = $registry->path;
